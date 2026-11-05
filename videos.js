@@ -6,12 +6,12 @@
    ===================================================================== */
 window.VIDEO_LINKS = {
   // ---------- Matematika ----------
-  "matematika/tenglamalar/13": "https://kinescope.io/6mouxyD3xwK5LuZuWgtJE5", // Kvadrat tenglama va Viyet teoremasi
-  "matematika/tenglamalar/21": "https://kinescope.io/vdZH9uiXg5brnyQdxgbENF", // Modulli tenglama, tengsizlik
-  "matematika/progressiya/24": "https://kinescope.io/ky3hVeTZDckcR17RANh1NM", // Arifmetik progressiya
-  "matematika/progressiya/26": "https://kinescope.io/5nUGvnJLrP6recb7bYAtwz", // Geometrik progressiya
-  "matematika/funksiyalar/38": "https://kinescope.io/qjfDtvzE6QQ3U6CK9e53Zn", // Kvadrat funksiya
-  "matematika/funksiyalar/45": "https://kinescope.io/kcqFbs2LFvi8wUUM3SqjDn", // Logarifmik tenglama
+  "matematika/tenglamalar/13": "https://kinescope.io/6mouxyD3xwK5LuZuWgtJE5=56", // Kvadrat tenglama va Viyet teoremasi
+  "matematika/tenglamalar/21": "https://kinescope.io/vdZH9uiXg5brnyQdxgbENF=56", // Modulli tenglama, tengsizlik
+  "matematika/progressiya/24": "https://kinescope.io/ky3hVeTZDckcR17RANh1NM=56", // Arifmetik progressiya
+  "matematika/progressiya/26": "https://kinescope.io/5nUGvnJLrP6recb7bYAtwz=56", // Geometrik progressiya
+  "matematika/funksiyalar/38": "https://kinescope.io/qjfDtvzE6QQ3U6CK9e53Zn=56", // Kvadrat funksiya
+  "matematika/funksiyalar/45": "https://kinescope.io/kcqFbs2LFvi8wUUM3SqjDn=56", // Logarifmik tenglama
 
   // ---------- Kimyo ----------
   "kimyo/gazlar/13": "https://kinescope.io/efHmTQvtkBWgskf8zYDeP2",           // Gazlarning zichligi va gazlar aralashmasi
@@ -24,8 +24,8 @@ window.VIDEO_LINKS = {
   "kimyo/anorganik/47": "https://kinescope.io/drEqkfFuUeyPLvBKQwRvL6",        // Azotning kislorodli birikmalari
 
   // ---------- Biologiya ----------
-  "biologiya/botanika/10": "",             // Botanika: 43, 44, 45, 46-mavzular
-  "biologiya/zoologiya/20": "",            // Zoologiya: 22, 23, 24, 25, 26, 27, 28, 29-mavzular
+  "biologiya/botanika/10": "https://kinescope.io/e9FHWqWQ4KJ1D8eibR4ghP?t=56",             // Botanika: 43, 44, 45, 46-mavzular
+  "biologiya/zoologiya/20": "https://kinescope.io/3RSkL71C4SEw3wbm1X2TLr?t=315",            // Zoologiya: 22, 23, 24, 25, 26, 27, 28, 29-mavzular
   "biologiya/anatomiya/34": "",            // Anatomiya: 23, 24, 25-mavzular
   "biologiya/biologiya/50": "",            // Biologiya: 28, 29, 30, 31, 32-mavzular
   "biologiya/masalalar/56": "",            // Genetika 1-qism
