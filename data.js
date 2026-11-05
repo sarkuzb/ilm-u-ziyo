@@ -323,13 +323,11 @@ window.COURSES = [
         "lessons": [
           {
             "id": 0,
-            "title": "1, 2, 3-mavzular",
-            "video": "videos/biologiya/botanika/0.mp4"
+            "title": "1, 2, 3-mavzular"
           },
           {
             "id": 1,
-            "title": "4, 5, 6-mavzular",
-            "video": "videos/biologiya/botanika/1.mp4"
+            "title": "4, 5, 6-mavzular"
           },
           {
             "id": 2,
@@ -365,7 +363,8 @@ window.COURSES = [
           },
           {
             "id": 10,
-            "title": "43, 44, 45, 46-mavzular"
+            "title": "43, 44, 45, 46-mavzular",
+            "video": "videos/biologiya/botanika/10.mp4"
           },
           {
             "id": 11,
@@ -391,13 +390,11 @@ window.COURSES = [
         "lessons": [
           {
             "id": 15,
-            "title": "1, 2, 3, 4, 5-mavzular",
-            "video": "videos/biologiya/zoologiya/15.mp4"
+            "title": "1, 2, 3, 4, 5-mavzular"
           },
           {
             "id": 16,
-            "title": "6, 7, 8, 9-mavzular",
-            "video": "videos/biologiya/zoologiya/16.mp4"
+            "title": "6, 7, 8, 9-mavzular"
           },
           {
             "id": 17,
@@ -413,7 +410,8 @@ window.COURSES = [
           },
           {
             "id": 20,
-            "title": "22, 23, 24, 25, 26, 27, 28, 29-mavzular"
+            "title": "22, 23, 24, 25, 26, 27, 28, 29-mavzular",
+            "video": "videos/biologiya/zoologiya/20.mp4"
           },
           {
             "id": 21,
@@ -455,13 +453,11 @@ window.COURSES = [
         "lessons": [
           {
             "id": 29,
-            "title": "1, 2, 3, 4-mavzular",
-            "video": "videos/biologiya/anatomiya/29.mp4"
+            "title": "1, 2, 3, 4-mavzular"
           },
           {
             "id": 30,
-            "title": "5, 6, 7, 8-mavzular",
-            "video": "videos/biologiya/anatomiya/30.mp4"
+            "title": "5, 6, 7, 8-mavzular"
           },
           {
             "id": 31,
@@ -477,7 +473,8 @@ window.COURSES = [
           },
           {
             "id": 34,
-            "title": "23, 24, 25-mavzular"
+            "title": "23, 24, 25-mavzular",
+            "video": "videos/biologiya/anatomiya/34.mp4"
           },
           {
             "id": 35,
@@ -523,13 +520,11 @@ window.COURSES = [
         "lessons": [
           {
             "id": 44,
-            "title": "1, 2, 3, 4-mavzular",
-            "video": "videos/biologiya/biologiya/44.mp4"
+            "title": "1, 2, 3, 4-mavzular"
           },
           {
             "id": 45,
-            "title": "5, 6, 7, 9-mavzular",
-            "video": "videos/biologiya/biologiya/45.mp4"
+            "title": "5, 6, 7, 9-mavzular"
           },
           {
             "id": 46,
@@ -549,7 +544,8 @@ window.COURSES = [
           },
           {
             "id": 50,
-            "title": "28, 29, 30, 31, 32-mavzular"
+            "title": "28, 29, 30, 31, 32-mavzular",
+            "video": "videos/biologiya/biologiya/50.mp4"
           },
           {
             "id": 51,
@@ -592,8 +588,7 @@ window.COURSES = [
           },
           {
             "id": 59,
-            "title": "Genetikadan kodominatlik (qon guruhlari)",
-            "video": "videos/biologiya/masalalar/59.mp4"
+            "title": "Genetikadan kodominatlik (qon guruhlari)"
           },
           {
             "id": 60,
@@ -617,7 +612,8 @@ window.COURSES = [
           },
           {
             "id": 65,
-            "title": "Genetikadan krossingover va boshqa turdagi masalalar"
+            "title": "Genetikadan krossingover va boshqa turdagi masalalar",
+            "video": "videos/biologiya/masalalar/65.mp4"
           },
           {
             "id": 66,

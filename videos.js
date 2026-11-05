@@ -24,14 +24,10 @@ window.VIDEO_LINKS = {
   "kimyo/anorganik/47": "https://kinescope.io/drEqkfFuUeyPLvBKQwRvL6",        // Azotning kislorodli birikmalari
 
   // ---------- Biologiya ----------
-  "biologiya/botanika/0": "",      // Botanika: 1, 2, 3-mavzular
-  "biologiya/botanika/1": "",      // Botanika: 4, 5, 6-mavzular
-  "biologiya/zoologiya/15": "",    // Zoologiya: 1, 2, 3, 4, 5-mavzular
-  "biologiya/zoologiya/16": "",    // Zoologiya: 6, 7, 8, 9-mavzular
-  "biologiya/anatomiya/29": "",    // Anatomiya: 1, 2, 3, 4-mavzular
-  "biologiya/anatomiya/30": "",    // Anatomiya: 5, 6, 7, 8-mavzular
-  "biologiya/biologiya/44": "",    // Biologiya: 1, 2, 3, 4-mavzular
-  "biologiya/biologiya/45": "",    // Biologiya: 5, 6, 7, 9-mavzular
-  "biologiya/masalalar/56": "",    // Genetika 1-qism
-  "biologiya/masalalar/59": "",    // Genetikadan kodominantlik (qon guruhlari)
+  "biologiya/botanika/10": "",             // Botanika: 43, 44, 45, 46-mavzular
+  "biologiya/zoologiya/20": "",            // Zoologiya: 22, 23, 24, 25, 26, 27, 28, 29-mavzular
+  "biologiya/anatomiya/34": "",            // Anatomiya: 23, 24, 25-mavzular
+  "biologiya/biologiya/50": "",            // Biologiya: 28, 29, 30, 31, 32-mavzular
+  "biologiya/masalalar/56": "",            // Genetika 1-qism
+  "biologiya/masalalar/65": "",            // Genetikadan krossingover va boshqa turdagi masalalar
 };
