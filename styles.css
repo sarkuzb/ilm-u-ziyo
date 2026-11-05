@@ -31,7 +31,9 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
+/* Sahifa hech qachon ekrandan kengaymasin (Android Chrome bezaklar uchun ham sahifani kengaytiradi).
+   "clip" — yopishqoq yuqori panelni buzmaydi; eski brauzerlarda pastdagi "hidden" ishlaydi */
+html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
 body {
   margin: 0;
   font-family: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -41,8 +43,9 @@ body {
   -webkit-tap-highlight-color: transparent;
   padding-bottom: calc(92px + var(--safe-b));
   overflow-x: hidden;
+  overflow-x: clip;
 }
-body.modal-open { overflow: hidden; }
+body.modal-open, html:has(body.modal-open) { overflow: hidden; }
 img { display: block; max-width: 100%; }
 button { font: inherit; color: inherit; }
 h1, h2, h3 { margin: 0; line-height: 1.18; letter-spacing: -.02em; }
@@ -98,7 +101,7 @@ i[data-icon] { display: inline-flex; font-style: normal; }
 .hero[hidden] { display: none; }
 .hero::before {               /* yengil to'q sariq nur */
   content: ""; position: absolute; z-index: -1;
-  left: 50%; top: -40px; width: 520px; height: 360px; transform: translateX(-50%);
+  left: 50%; top: -40px; width: min(520px, 100%); height: 360px; transform: translateX(-50%);
   background: radial-gradient(closest-side, rgba(248, 174, 60, .28), rgba(248, 174, 60, 0));
   pointer-events: none;
 }
@@ -121,6 +124,7 @@ i[data-icon] { display: inline-flex; font-style: normal; }
 }
 
 /* Treyler bloki */
+.trailer[hidden] { display: none !important; }   /* treyler bloki hozircha o'chirilgan */
 .trailer {
   display: flex; gap: 14px; align-items: flex-start; text-align: left;
   margin-top: 22px; padding: 16px;
