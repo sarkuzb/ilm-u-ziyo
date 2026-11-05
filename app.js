@@ -229,11 +229,10 @@ function viewSubjects() {
     </div>
     <div class="grid">
       ${COURSES.map(s => `
-        <button class="card" type="button" data-subject="${s.id}">
+        <button class="card card-subject" type="button" data-subject="${s.id}">
           <span class="tile" aria-hidden="true">${icon(SUBJECT_ICONS[s.id] || "graduation-cap")}</span>
           <span class="card-body">
             <span class="card-title">${esc(s.name)}</span>
-            <span class="card-tags">${s.sections.map(x => `<span class="tag">${esc(x.name)}</span>`).join("")}</span>
           </span>
           <span class="card-arrow" aria-hidden="true">${icon("chevron-right")}</span>
         </button>`).join("")}
