@@ -1,0 +1,10 @@
+# Videolar katta (GitHub 100 MB dan katta faylni qabul qilmaydi) — alohida joylanadi
+videos/**/*.mp4
+videos/**/*.mov
+videos/**/*.webm
+
+# Tizim fayllari
+.DS_Store
+Thumbs.db
+desktop.ini
+~$*
