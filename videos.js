@@ -7,11 +7,11 @@
 window.VIDEO_LINKS = {
   // ---------- Matematika ----------
   "matematika/tenglamalar/13": "https://kinescope.io/6mouxyD3xwK5LuZuWgtJE5", // Kvadrat tenglama va Viyet teoremasi
-  "matematika/tenglamalar/21": "", // Modulli tenglama, tengsizlik
-  "matematika/progressiya/24": "", // Arifmetik progressiya
-  "matematika/progressiya/26": "", // Geometrik progressiya
-  "matematika/funksiyalar/38": "", // Kvadrat funksiya
-  "matematika/funksiyalar/45": "", // Logarifmik tenglama
+  "matematika/tenglamalar/21": "https://kinescope.io/vdZH9uiXg5brnyQdxgbENF", // Modulli tenglama, tengsizlik
+  "matematika/progressiya/24": "https://kinescope.io/ky3hVeTZDckcR17RANh1NM", // Arifmetik progressiya
+  "matematika/progressiya/26": "https://kinescope.io/5nUGvnJLrP6recb7bYAtwz", // Geometrik progressiya
+  "matematika/funksiyalar/38": "https://kinescope.io/qjfDtvzE6QQ3U6CK9e53Zn", // Kvadrat funksiya
+  "matematika/funksiyalar/45": "https://kinescope.io/kcqFbs2LFvi8wUUM3SqjDn", // Logarifmik tenglama
 
   // ---------- Kimyo ----------
   "kimyo/gazlar/13": "",           // Gazlarning zichligi va gazlar aralashmasi
