@@ -6,8 +6,8 @@
    ===================================================================== */
 window.VIDEO_LINKS = {
   // ---------- Matematika ----------
-  "matematika/tenglamalar/13": "https://kinescope.io/6mouxyD3xwK5LuZuWgtJE5=208", // Kvadrat tenglama va Viyet teoremasi
-  "matematika/tenglamalar/21": "https://kinescope.io/vdZH9uiXg5brnyQdxgbENF=56", // Modulli tenglama, tengsizlik
+  "matematika/tenglamalar/13": "https://kinescope.io/6mouxyD3xwK5LuZuWgtJE5=228", // Kvadrat tenglama va Viyet teoremasi
+  "matematika/tenglamalar/21": "https://kinescope.io/vdZH9uiXg5brnyQdxgbENF=1658", // Modulli tenglama, tengsizlik
   "matematika/progressiya/24": "https://kinescope.io/ky3hVeTZDckcR17RANh1NM=56", // Arifmetik progressiya
   "matematika/progressiya/26": "https://kinescope.io/5nUGvnJLrP6recb7bYAtwz=56", // Geometrik progressiya
   "matematika/funksiyalar/38": "https://kinescope.io/qjfDtvzE6QQ3U6CK9e53Zn=56", // Kvadrat funksiya
