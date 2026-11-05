@@ -4,8 +4,8 @@
 const CONFIG = {
   brandName: "Ilm-u Ziyo Online",      // ilova nomi (yuqori panelda; "Online" so'zi to'q sariq bo'ladi)
   onelink: "https://onelink.to/gkdygk", // App Store / Play Market yo'naltiruvchi link
-  freeSeconds: 60,                      // raqam so'ralgunga qadar umumiy ko'rish vaqti (soniya)
-  reminderSeconds: 30,                  // shu vaqtdan keyin ikkinchi namuna dars eslatiladi
+  freeSeconds: 40,                      // raqam so'ralgunga qadar umumiy ko'rish vaqti (soniya)
+  reminderSeconds: 20,                  // shu vaqtdan keyin ikkinchi namuna dars eslatiladi
   nudgeSeconds: 6,                      // fan tanlanmasa shu vaqtdan keyin "Qaysi fanni tanlaysiz?" chiqadi
   testMode: true,                       // TEST: har refreshda hammasi boshidan. Saytni ishga tushirishdan oldin false qiling!
   // O'zbekiston mobil operator kodlari
@@ -210,6 +210,7 @@ function render() {
   const view = $("#view");
   const sameSection = prev.bolim && prev.bolim === route.bolim;
   if (video && video.destroy) video.destroy();   // eski Kinescope pleyerini o'chiramiz
+  document.documentElement.classList.remove("pseudo-fs-open");
   if (step === 1) { video = null; view.innerHTML = viewSubjects(); }
   if (step === 2) { video = null; view.innerHTML = viewSections(subj); }
   if (step === 3) { view.innerHTML = viewLessons(subj, sec); mountPlayer(sameSection); }
@@ -283,7 +284,7 @@ function viewLessons(subj, sec) {
       <h2>${esc(sec.name)}</h2>
     </div>
 
-    <div class="player" data-current="${current.id}">
+    <div class="player${isKinescope(current.video) ? " is-kp" : ""}" data-current="${current.id}">
       <span class="player-badge">${icon("sparkles")}Namuna dars</span>
       <button class="player-fs" type="button" data-fullscreen aria-label="To'liq ekran">
         ${icon("maximize", "fs-enter")}${icon("minimize", "fs-exit")}
@@ -477,23 +478,44 @@ function maybeShowReminder() {
 }
 
 /* =====================================================================
-   To'liq ekran: butun pleyer (video + eslatma) to'liq ekranga o'tadi.
-   iPhone faqat videoning o'zini to'liq ekran qila oladi — u yerda Apple pleyeri ochiladi.
+   To'liq ekran: butun pleyer (video + eslatma) to'liq ekranga o'tadi —
+   shunda "Yana bitta namuna dars bor" eslatmasi video USTIDA ko'rinadi.
+   - Android / kompyuter: brauzerning to'liq ekrani (pleyer bloki uchun).
+   - iPhone: sayt bloklarini to'liq ekran qilib bo'lmaydi → Kinescope uchun pleyerni CSS bilan
+     butun ekranga yoyamiz ("psevdo to'liq ekran"); oddiy <video> uchun Apple pleyeri ochiladi.
    ===================================================================== */
 const fsElement = () => document.fullscreenElement || document.webkitFullscreenElement || null;
-const isPlayerFullscreen = () => { const el = fsElement(); return !!el && el.classList?.contains("player"); };
+const pseudoPlayer = () => document.querySelector(".player.is-pseudo-fs");
+const isPlayerFullscreen = () => { const el = fsElement(); return (!!el && !!el.classList?.contains("player")) || !!pseudoPlayer(); };
 const isNativeFullscreen = () => !!video && (fsElement() === video || fsElement()?.tagName === "IFRAME" || video.webkitDisplayingFullscreen === true);
+
+function enterPseudoFullscreen(p) {
+  p.classList.add("is-pseudo-fs");
+  document.documentElement.classList.add("pseudo-fs-open");
+}
+function exitPseudoFullscreen() {
+  const p = pseudoPlayer();
+  if (!p) return false;
+  p.classList.remove("is-pseudo-fs");
+  document.documentElement.classList.remove("pseudo-fs-open");
+  return true;
+}
 
 function enterFullscreen() {
   const p = $(".player");
   if (!p || !video) return;
+  const isKp = video.kind === "kinescope";
   const req = p.requestFullscreen || p.webkitRequestFullscreen;
+  const fallback = () => {
+    if (isKp) enterPseudoFullscreen(p);                                  // iPhone + Kinescope
+    else if (video.webkitEnterFullscreen) video.webkitEnterFullscreen(); // iPhone + oddiy video
+  };
   if (req) {
-    const res = req.call(p);
-    if (res && res.catch) res.catch(() => { if (video.webkitEnterFullscreen) video.webkitEnterFullscreen(); });
-  } else if (video.webkitEnterFullscreen) {
-    video.webkitEnterFullscreen();   // iPhone
-  }
+    try {
+      const res = req.call(p);
+      if (res && res.catch) res.catch(fallback);
+    } catch { fallback(); }
+  } else fallback();
 }
 function exitFullscreen() {
   try {
@@ -501,12 +523,15 @@ function exitFullscreen() {
     else if (document.webkitExitFullscreen && document.webkitFullscreenElement) document.webkitExitFullscreen();
     if (video && video.webkitDisplayingFullscreen) video.webkitExitFullscreen();
   } catch {}
+  if (exitPseudoFullscreen()) maybeShowReminder();
 }
-function toggleFullscreen() { if (fsElement()) exitFullscreen(); else enterFullscreen(); }
+function toggleFullscreen() { if (fsElement() || pseudoPlayer()) exitFullscreen(); else enterFullscreen(); }
 
 // To'liq ekrandan chiqilganda kutib turgan eslatmani ko'rsatamiz
 ["fullscreenchange", "webkitfullscreenchange"].forEach(ev =>
   document.addEventListener(ev, () => { if (!fsElement()) maybeShowReminder(); }));
+// Psevdo to'liq ekrandan Escape bilan chiqish (kompyuterda sinash uchun)
+document.addEventListener("keydown", e => { if (e.key === "Escape" && pseudoPlayer()) exitFullscreen(); });
 
 /* =====================================================================
    Video va yashirin taymer
@@ -524,6 +549,7 @@ function mountPlayer(autoplay = false) {
     if (playBtn) playBtn.hidden = true;
   });
   video.addEventListener("webkitendfullscreen", () => maybeShowReminder());  // to'liq ekrandan chiqdi (iPhone / Kinescope)
+  video.addEventListener("fullscreenrequest", () => toggleFullscreen());      // Kinescope'ning to'liq ekran tugmasi bosildi
   video.addEventListener("dblclick", e => { e.preventDefault(); toggleFullscreen(); });
   video.addEventListener("play", () => {
     if (playBtn) playBtn.hidden = true;   // katta ▶ tugmasi faqat boshlanishda ko'rinadi
@@ -597,6 +623,9 @@ function createKinescopeMedia(host, url) {
         url: src,
         size: { width: "100%", height: "100%" },
         behavior: { playsInline: true, preload: "metadata", localStorage: false },
+        // Kinescope'ning to'liq ekran tugmasi o'z to'liq ekranini ochmasin — bizga xabar bersin,
+        // biz esa butun pleyerimizni (eslatma bilan birga) to'liq ekran qilamiz. (Kinescope: experimental)
+        settings: { actionOverrides: { fullscreen: "event" } },
         ui: { language: "ru" },
       });
     } catch (e) { console.error(e); return m.emit("error"); }
@@ -609,6 +638,7 @@ function createKinescopeMedia(host, url) {
     p.on(E.Pause, () => { m.paused = true; m.emit("pause"); });
     p.on(E.Ended, () => { m.ended = true; m.paused = true; m.emit("pause"); });
     p.on(E.Error, () => m.emit("error"));
+    if (E.FullscreenActionPerformed) p.on(E.FullscreenActionPerformed, () => m.emit("fullscreenrequest"));
     p.on(E.FullscreenChange, ev => {
       const on = !!(ev && ev.data && ev.data.isFullscreen);
       m.fs = on;

@@ -370,10 +370,29 @@ i[data-icon] { display: inline-flex; font-style: normal; }
 .player:fullscreen .player-badge { top: calc(12px + var(--safe-t)); left: calc(12px + env(safe-area-inset-left, 0px)); }
 .player:fullscreen .player-fs { top: calc(12px + var(--safe-t)); right: calc(12px + env(safe-area-inset-right, 0px)); }
 
+/* Psevdo to'liq ekran (iPhone + Kinescope): pleyer CSS bilan butun ekranga yoyiladi */
+.player.is-pseudo-fs {
+  position: fixed; inset: 0; z-index: 90;
+  width: 100vw; height: 100vh; height: 100dvh; max-height: none;
+  margin: 0; border-radius: 0; aspect-ratio: auto; box-shadow: none;
+  animation: none; transform: none;
+}
+html.pseudo-fs-open, html.pseudo-fs-open body { overflow: hidden; }
+.player.is-pseudo-fs .player-badge { top: calc(12px + var(--safe-t)); left: calc(12px + env(safe-area-inset-left, 0px)); }
+.player.is-pseudo-fs .player-fs { top: calc(12px + var(--safe-t)); right: calc(12px + env(safe-area-inset-right, 0px)); }
+.player.is-pseudo-fs .player-fs .fs-enter { display: none; }
+.player.is-pseudo-fs .player-fs .fs-exit { display: inline-flex; }
+
+/* Kinescope pleyerida to'liq ekranni Kinescope'ning o'z tugmasi boshqaradi;
+   bizning tugma faqat to'liq ekranda "chiqish" tugmasi bo'lib ko'rinadi */
+.player.is-kp .player-fs { display: none; }
+.player.is-kp:fullscreen .player-fs, .player.is-kp:-webkit-full-screen .player-fs, .player.is-kp.is-pseudo-fs .player-fs { display: grid; }
+
 /* Video ustidagi eslatma — faqat pleyer to'liq ekranda ko'rinadi */
 .player-reminder { display: none; }
 .player:fullscreen .player-reminder:not([hidden]),
-.player:-webkit-full-screen .player-reminder:not([hidden]) {
+.player:-webkit-full-screen .player-reminder:not([hidden]),
+.player.is-pseudo-fs .player-reminder:not([hidden]) {
   position: absolute; z-index: 4;
   left: 50%; transform: translateX(-50%);
   top: calc(64px + var(--safe-t));

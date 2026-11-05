@@ -14,14 +14,14 @@ window.VIDEO_LINKS = {
   "matematika/funksiyalar/45": "https://kinescope.io/kcqFbs2LFvi8wUUM3SqjDn", // Logarifmik tenglama
 
   // ---------- Kimyo ----------
-  "kimyo/gazlar/13": "",           // Gazlarning zichligi va gazlar aralashmasi
-  "kimyo/gazlar/15": "",           // Gazlar aralashmasining o'rtacha molekular massasi
-  "kimyo/eritmalar/18": "",        // Eruvchanlik va foiz konsentratsiya bo'yicha masalalar
-  "kimyo/eritmalar/19": "",        // Molyar va normal konsentratsiya
-  "kimyo/kinetika/37": "",         // Reaksiya tezligi
-  "kimyo/kinetika/39": "",         // Kimyoviy muvozanat
-  "kimyo/anorganik/42": "",        // Xlor va uning birikmalari
-  "kimyo/anorganik/47": "",        // Azotning kislorodli birikmalari
+  "kimyo/gazlar/13": "https://kinescope.io/efHmTQvtkBWgskf8zYDeP2",           // Gazlarning zichligi va gazlar aralashmasi
+  "kimyo/gazlar/15": "https://kinescope.io/6rNy3prAcTgBwz7rUrTFZL",           // Gazlar aralashmasining o'rtacha molekular massasi
+  "kimyo/eritmalar/18": "https://kinescope.io/dvh6DAkfhMq1LNzyrH3kmd",        // Eruvchanlik va foiz konsentratsiya bo'yicha masalalar
+  "kimyo/eritmalar/19": "https://kinescope.io/cJLyF9GLvPM29nDdVJS4te",        // Molyar va normal konsentratsiya
+  "kimyo/kinetika/37": "https://kinescope.io/9SYem8q8hVbMVEUVw34x5v",         // Reaksiya tezligi
+  "kimyo/kinetika/39": "https://kinescope.io/pSwfqwsFpVwoWoLmiXFvhU",         // Kimyoviy muvozanat
+  "kimyo/anorganik/42": "https://kinescope.io/soa2oBkH8oKE49J2tnKqjj",        // Xlor va uning birikmalari
+  "kimyo/anorganik/47": "https://kinescope.io/drEqkfFuUeyPLvBKQwRvL6",        // Azotning kislorodli birikmalari
 
   // ---------- Biologiya ----------
   "biologiya/botanika/0": "",      // Botanika: 1, 2, 3-mavzular
