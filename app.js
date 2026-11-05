@@ -78,14 +78,39 @@ function slowScrollToEl(el, block = "start", duration) {
 const COURSES = window.COURSES || [];
 
 /* videos.js dagi Kinescope linklarini darslarga ulaymiz.
-   Link "kinescope.io/ID" yoki "kinescope.io/embed/ID" ko'rinishida bo'lishi mumkin. */
+   Link "kinescope.io/ID" yoki "kinescope.io/embed/ID" ko'rinishida bo'lishi mumkin.
+   Boshlanish vaqti (ixtiyoriy) link oxirida: ?t=56  |  =56  |  ?t=1:30  |  ?t=1m30s */
 const KINESCOPE_RE = /kinescope\.io\/(?:embed\/)?([A-Za-z0-9]+)/;
 const isKinescope = src => KINESCOPE_RE.test(src || "");
+/* "56", "1:30", "1:02:03", "1m30s", "2h5m" → soniya */
+function parseTime(v) {
+  v = String(v || "").trim().toLowerCase();
+  if (!v) return 0;
+  if (v.includes(":")) return v.split(":").reduce((acc, x) => acc * 60 + (Number(x) || 0), 0);
+  if (/[hms]/.test(v)) {
+    let sec = 0;
+    for (const [, n, u] of v.matchAll(/(\d+(?:\.\d+)?)\s*([hms])/g)) sec += Number(n) * (u === "h" ? 3600 : u === "m" ? 60 : 1);
+    return sec;
+  }
+  return Number(v) || 0;
+}
+/* Linkdagi boshlanish vaqtini topish: ID dan keyin kelgan "t=..." yoki shunchaki "=..." */
+function startOf(raw) {
+  const after = String(raw).replace(/^.*kinescope\.io\/(?:embed\/)?[A-Za-z0-9]+/, "");
+  const m = /(?:[?&#]t=|^=)([0-9hms:.]+)/i.exec(after);
+  return m ? parseTime(m[1]) : 0;
+}
+/* Vaqtni "#t=" bilan olib yuramiz (oddiy <video> buni o'zi tushunadi; Kinescope uchun pleyer o'zi o'tkazadi) */
+const startFrom = src => { const m = /#t=([\d.]+)/.exec(src || ""); return m ? Number(m[1]) : 0; };
+const withoutStart = src => String(src || "").replace(/#t=[\d.]+$/, "");
 (function applyVideoLinks() {
   const links = window.VIDEO_LINKS || {};
   COURSES.forEach(s => s.sections.forEach(sec => sec.lessons.forEach(l => {
-    const m = KINESCOPE_RE.exec(links[`${s.id}/${sec.id}/${l.id}`] || "");
-    if (m) l.video = `https://kinescope.io/${m[1]}`;
+    const raw = links[`${s.id}/${sec.id}/${l.id}`] || "";
+    const m = KINESCOPE_RE.exec(raw);
+    if (!m) return;
+    const t = startOf(raw);
+    l.video = `https://kinescope.io/${m[1]}` + (t > 0 ? `#t=${t}` : "");
   })));
 })();
 const findSubject = id => COURSES.find(s => s.id === id);
@@ -617,10 +642,11 @@ function createKinescopeMedia(host, url) {
     const el = document.createElement("div");
     el.id = "kp-" + (++kpSeq);
     host.replaceChildren(el);
+    const startAt = startFrom(src);        // linkda ko'rsatilgan boshlanish soniyasi
     let p;
     try {
       p = await factory.create(el.id, {
-        url: src,
+        url: withoutStart(src),
         size: { width: "100%", height: "100%" },
         behavior: { playsInline: true, preload: "metadata", localStorage: false },
         // Kinescope'ning to'liq ekran tugmasi o'z to'liq ekranini ochmasin — bizga xabar bersin,
@@ -632,7 +658,17 @@ function createKinescopeMedia(host, url) {
     if (m.destroyed || !host.isConnected) { try { p.destroy(); } catch {} return; }
     m.player = p;
     const E = p.Events;
-    p.on(E.Play, () => { m.paused = false; m.ended = false; m.waiting = true; m.emit("play"); });
+    // Boshlanish vaqti: pleyer tayyor bo'lishi bilan o'sha soniyaga o'tkazamiz,
+    // va birinchi "Play"da yana tekshiramiz (ba'zi qurilmalarda boshlanmasdan oldingi o'tkazish e'tiborga olinmaydi)
+    let startChecked = !(startAt > 0);
+    if (startAt > 0) quiet(() => p.seekTo(startAt));
+    p.on(E.Play, () => {
+      m.paused = false; m.ended = false; m.waiting = true; m.emit("play");
+      if (!startChecked) {
+        startChecked = true;
+        quiet(() => Promise.resolve(p.getCurrentTime()).then(t => { if ((t || 0) < startAt - 1) return p.seekTo(startAt); }));
+      }
+    });
     p.on(E.Playing, () => { m.paused = false; m.waiting = false; });
     p.on(E.Waiting, () => { m.waiting = true; });
     p.on(E.Pause, () => { m.paused = true; m.emit("pause"); });
