@@ -76,6 +76,18 @@ function slowScrollToEl(el, block = "start", duration) {
 }
 
 const COURSES = window.COURSES || [];
+
+/* videos.js dagi Kinescope linklarini darslarga ulaymiz.
+   Link "kinescope.io/ID" yoki "kinescope.io/embed/ID" ko'rinishida bo'lishi mumkin. */
+const KINESCOPE_RE = /kinescope\.io\/(?:embed\/)?([A-Za-z0-9]+)/;
+const isKinescope = src => KINESCOPE_RE.test(src || "");
+(function applyVideoLinks() {
+  const links = window.VIDEO_LINKS || {};
+  COURSES.forEach(s => s.sections.forEach(sec => sec.lessons.forEach(l => {
+    const m = KINESCOPE_RE.exec(links[`${s.id}/${sec.id}/${l.id}`] || "");
+    if (m) l.video = `https://kinescope.io/${m[1]}`;
+  })));
+})();
 const findSubject = id => COURSES.find(s => s.id === id);
 const findSection = (subj, id) => subj && subj.sections.find(s => s.id === id);
 const freeOf = sec => sec.lessons.filter(l => l.video);
@@ -146,7 +158,9 @@ function chooseSection(bolim) {
 function chooseLesson(id) {
   const sec = findSection(findSubject(choice.fan), choice.bolim);
   if (!sec || !sec.lessons.some(l => l.id === id && l.video)) return;
-  if (isPlayerFullscreen()) return swapLessonInPlace(sec, id);   // to'liq ekrandan chiqarmasdan almashtiramiz
+  const next = sec.lessons.find(l => l.id === id);
+  const sameKind = video && (video.kind === "kinescope") === isKinescope(next.video);
+  if (isPlayerFullscreen() && sameKind) return swapLessonInPlace(sec, id);   // to'liq ekrandan chiqarmasdan almashtiramiz
   navigate({ fan: choice.fan, bolim: choice.bolim, dars: id });
 }
 
@@ -159,10 +173,10 @@ function swapLessonInPlace(sec, id) {
   $(".player").dataset.current = id;
   $(".player-missing").hidden = true;
   $(".player-missing code").textContent = l.video;
-  $(".player-play").hidden = true;
+  const pb = $(".player-play"); if (pb) pb.hidden = true;
   lessonWatched = 0; lastTick = null;
-  video.poster = posterOf(l.video);
-  video.src = l.video;
+  if (video.kind === "kinescope") video.load(l.video);
+  else { video.poster = posterOf(l.video); video.src = l.video; }
   $(".now-title").textContent = "Mavzu: " + l.title;
   document.querySelectorAll(".lesson.is-free").forEach(b => {
     const cur = Number(b.dataset.lesson) === id;
@@ -195,9 +209,10 @@ function render() {
 
   const view = $("#view");
   const sameSection = prev.bolim && prev.bolim === route.bolim;
+  if (video && video.destroy) video.destroy();   // eski Kinescope pleyerini o'chiramiz
   if (step === 1) { video = null; view.innerHTML = viewSubjects(); }
   if (step === 2) { video = null; view.innerHTML = viewSections(subj); }
-  if (step === 3) { view.innerHTML = viewLessons(subj, sec); mountPlayer(); }
+  if (step === 3) { view.innerHTML = viewLessons(subj, sec); mountPlayer(sameSection); }
   // Yangi qadamda elementlar ketma-ket ohista paydo bo'ladi (dars almashganda emas)
   if (!sameSection) { view.classList.remove("view-enter"); void view.offsetWidth; view.classList.add("view-enter"); }
 
@@ -282,14 +297,16 @@ function viewLessons(subj, sec) {
         <button class="btn btn-primary btn-sm" type="button" data-lesson="${other.id}" data-from-reminder>${icon("play")}Ko'rish</button>
         <button class="btn btn-sm player-reminder-no" type="button" data-dismiss-reminder>Kerak emas</button>
       </div>` : ""}
+      ${isKinescope(current.video) ? `
+      <div class="kp-host" id="kp-host" data-src="${esc(current.video)}"></div>` : `
       <video id="video" controls playsinline webkit-playsinline preload="metadata"
              controlslist="nodownload noplaybackrate nofullscreen" disablepictureinpicture
              poster="${esc(posterOf(current.video))}" src="${esc(current.video)}"></video>
       <button class="player-play" type="button" data-play aria-label="Videoni boshlash">
         <span class="player-play-btn">${icon("play")}</span>
-      </button>
+      </button>`}
       <div class="player-missing" hidden>
-        <div>${icon("clapperboard")}Video hali joylanmagan
+        <div>${icon("clapperboard")}<span class="player-missing-text">Video hali joylanmagan</span>
           <code>${esc(current.video)}</code>
         </div>
       </div>
@@ -465,7 +482,7 @@ function maybeShowReminder() {
    ===================================================================== */
 const fsElement = () => document.fullscreenElement || document.webkitFullscreenElement || null;
 const isPlayerFullscreen = () => { const el = fsElement(); return !!el && el.classList?.contains("player"); };
-const isNativeFullscreen = () => !!video && (fsElement() === video || video.webkitDisplayingFullscreen === true);
+const isNativeFullscreen = () => !!video && (fsElement() === video || fsElement()?.tagName === "IFRAME" || video.webkitDisplayingFullscreen === true);
 
 function enterFullscreen() {
   const p = $(".player");
@@ -494,24 +511,114 @@ function toggleFullscreen() { if (fsElement()) exitFullscreen(); else enterFulls
 /* =====================================================================
    Video va yashirin taymer
    ===================================================================== */
-function mountPlayer() {
-  video = $("#video");
+function mountPlayer(autoplay = false) {
+  const host = $("#kp-host");
+  video = host ? createKinescopeMedia(host, host.dataset.src) : $("#video");
   lessonWatched = 0;
   lastTick = null;
   const missing = $(".player-missing");
-  video.addEventListener("error", () => { missing.hidden = false; });
-  video.addEventListener("webkitendfullscreen", () => maybeShowReminder());  // iPhone to'liq ekrandan chiqdi
-  video.addEventListener("dblclick", e => { e.preventDefault(); toggleFullscreen(); });
   const playBtn = $(".player-play");
-  video.addEventListener("error", () => { playBtn.hidden = true; });
+  video.addEventListener("error", () => {
+    if (video.kind === "kinescope") $(".player-missing-text").textContent = "Videoni yuklab bo'lmadi. Internetni tekshirib, sahifani yangilang";
+    missing.hidden = false;
+    if (playBtn) playBtn.hidden = true;
+  });
+  video.addEventListener("webkitendfullscreen", () => maybeShowReminder());  // to'liq ekrandan chiqdi (iPhone / Kinescope)
+  video.addEventListener("dblclick", e => { e.preventDefault(); toggleFullscreen(); });
   video.addEventListener("play", () => {
-    playBtn.hidden = true;   // katta ▶ tugmasi faqat boshlanishda ko'rinadi
+    if (playBtn) playBtn.hidden = true;   // katta ▶ tugmasi faqat boshlanishda ko'rinadi
     if (!submitted && watched >= CONFIG.freeSeconds) return gate();
     const key = lessonKey(route.dars);
     if (!seen.includes(key)) { seen.push(key); store.set("seen", seen); }
   });
   video.addEventListener("pause", () => { lastTick = null; flush(); });
-  video.play().catch(() => {});  // brauzer ruxsat bermasa — foydalanuvchi o'zi bosadi
+  // Oddiy video: avtomatik boshlashga urinamiz. Kinescope: faqat foydalanuvchi darsni o'zi tanlaganda
+  if (video.kind !== "kinescope" || autoplay) video.play().catch(() => {});
+}
+
+/* =====================================================================
+   Kinescope pleyeri (IFrame Player API)
+   Pleyerni oddiy <video> kabi ko'rsatadi: paused / ended / readyState, play(), pause(),
+   "play" / "pause" / "error" hodisalari — shuning uchun taymer, eslatma va to'liq ekran
+   kodi o'zgarishsiz ishlaydi. Hujjat: https://docs.kinescope.com/player-docs/
+   ===================================================================== */
+const KINESCOPE_API = "https://player.kinescope.io/latest/iframe.player.js";
+let kpFactory = null;
+let kpSeq = 0;
+/* Pleyer buyrug'ini xavfsiz chaqirish: promise qaytarsa ham, qaytarmasa ham, xato bersa ham sayt to'xtamaydi */
+function quiet(fn) { try { const r = fn(); if (r && typeof r.catch === "function") r.catch(() => {}); } catch {} }
+function loadKinescope() {
+  if (!kpFactory) {
+    kpFactory = new Promise((resolve, reject) => {
+      window.onKinescopeIframeAPIReady = factory => resolve(factory);   // skriptdan OLDIN e'lon qilinadi
+      const s = document.createElement("script");
+      s.src = KINESCOPE_API; s.async = true;
+      s.onerror = () => { kpFactory = null; reject(new Error("Kinescope API yuklanmadi")); };
+      document.head.appendChild(s);
+    });
+  }
+  return kpFactory;
+}
+
+function createKinescopeMedia(host, url) {
+  const handlers = {};
+  const m = {
+    kind: "kinescope",
+    player: null, paused: true, ended: false, waiting: false, fs: false, wantPlay: false, destroyed: false,
+    get readyState() { return this.waiting ? 2 : 4; },             // yuklanayotgan vaqt sanalmaydi
+    get webkitDisplayingFullscreen() { return this.fs; },          // Kinescope'ning o'z to'liq ekrani
+    addEventListener(type, fn) { (handlers[type] = handlers[type] || []).push(fn); },
+    emit(type) { (handlers[type] || []).forEach(fn => { try { fn(); } catch (e) { console.error(e); } }); },
+    play() {
+      this.wantPlay = true;
+      return this.player ? Promise.resolve(this.player.play()).catch(() => {}) : Promise.resolve();
+    },
+    pause() { this.wantPlay = false; if (this.player) quiet(() => this.player.pause()); },
+    webkitEnterFullscreen() { if (this.player) quiet(() => this.player.setFullscreen(true)); },
+    webkitExitFullscreen() { if (this.player) quiet(() => this.player.setFullscreen(false)); },
+    load(newUrl) { this.reset(); create(newUrl); this.play(); },
+    reset() {
+      if (this.player) { try { this.player.destroy(); } catch {} }
+      this.player = null; this.paused = true; this.ended = false; this.waiting = false; this.fs = false;
+    },
+    destroy() { this.destroyed = true; this.reset(); },
+  };
+
+  async function create(src) {
+    let factory;
+    try { factory = await loadKinescope(); } catch { return m.emit("error"); }
+    if (m.destroyed) return;
+    const el = document.createElement("div");
+    el.id = "kp-" + (++kpSeq);
+    host.replaceChildren(el);
+    let p;
+    try {
+      p = await factory.create(el.id, {
+        url: src,
+        size: { width: "100%", height: "100%" },
+        behavior: { playsInline: true, preload: "metadata", localStorage: false },
+        ui: { language: "ru" },
+      });
+    } catch (e) { console.error(e); return m.emit("error"); }
+    if (m.destroyed || !host.isConnected) { try { p.destroy(); } catch {} return; }
+    m.player = p;
+    const E = p.Events;
+    p.on(E.Play, () => { m.paused = false; m.ended = false; m.waiting = true; m.emit("play"); });
+    p.on(E.Playing, () => { m.paused = false; m.waiting = false; });
+    p.on(E.Waiting, () => { m.waiting = true; });
+    p.on(E.Pause, () => { m.paused = true; m.emit("pause"); });
+    p.on(E.Ended, () => { m.ended = true; m.paused = true; m.emit("pause"); });
+    p.on(E.Error, () => m.emit("error"));
+    p.on(E.FullscreenChange, ev => {
+      const on = !!(ev && ev.data && ev.data.isFullscreen);
+      m.fs = on;
+      if (!on) m.emit("webkitendfullscreen");
+    });
+    if (m.wantPlay) quiet(() => p.play());
+  }
+
+  create(url);
+  return m;
 }
 
 function isPlaying(v) {
