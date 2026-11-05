@@ -6,7 +6,7 @@ const CONFIG = {
   onelink: "https://onelink.to/gkdygk", // App Store / Play Market yo'naltiruvchi link
   freeSeconds: 60,                      // raqam so'ralgunga qadar umumiy ko'rish vaqti (soniya)
   reminderSeconds: 30,                  // shu vaqtdan keyin ikkinchi namuna dars eslatiladi
-  nudgeSeconds: 5,                      // fan tanlanmasa shu vaqtdan keyin "Qaysi fanni tanlaysiz?" chiqadi
+  nudgeSeconds: 6,                      // fan tanlanmasa shu vaqtdan keyin "Qaysi fanni tanlaysiz?" chiqadi
   testMode: true,                       // TEST: har refreshda hammasi boshidan. Saytni ishga tushirishdan oldin false qiling!
   // O'zbekiston mobil operator kodlari
   operatorCodes: ["20", "33", "50", "55", "77", "88", "90", "91", "93", "94", "95", "97", "98", "99"],
